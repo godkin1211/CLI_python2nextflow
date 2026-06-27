@@ -1,0 +1,50 @@
+name: nf-test CI
+
+# 在 push / PR 到主分支，且有改到 pipeline 相關檔案時觸發
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# 同一分支的新 push 會取消仍在跑的舊 CI，節省資源
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nf-test:
+    name: Run nf-test
+    runs-on: ubuntu-latest
+
+    # pipeline 位於 repo 的 nextflow/ 子目錄
+    defaults:
+      run:
+        working-directory: nextflow
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+        with:
+          version: "25.10.3"
+
+      - name: Install nf-test
+        run: |
+          curl -fsSL https://get.nf-test.com | bash
+          sudo mv nf-test /usr/local/bin/
+        working-directory: .
+
+      - name: Ensure bin scripts are executable
+        run: chmod +x bin/*.py
+
+      - name: Run nf-test
+        run: nf-test test --verbose

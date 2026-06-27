@@ -1,0 +1,9 @@
+# Configuration File for CLI
+
+# file_path_config: support absolute_path and relative_path
+#                   relative_path is relative to the project root (CLI/...)
+input_file_path: CLI/static/CLI_input_file/input.csv
+# input_file_path: /home/user/2026_labtraining/lab_training_2026/CLI/static/input_file/input.csv
+
+# accept integer
+count_threshold: 10

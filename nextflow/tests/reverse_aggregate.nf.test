@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "REVERSE_AGGREGATE"
+    script "modules/local/reverse_aggregate.nf"
+    process "REVERSE_AGGREGATE"
+
+    test("reverse-aggregate a small mRNA->miRNA table") {
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+            process {
+                """
+                input[0] = file("${projectDir}/tests/data/mini_input.csv")
+                """
+            }
+        }
+        then {
+            assert process.success
+            def out = path(process.out.aggregated[0])
+            def lines = out.readLines()
+
+            // header + 3 個 miRNA (mir-1/2/3)，'-' 被跳過
+            assert lines.size() == 4
+            assert lines[0] == "miRNA,count,mRNA"
+
+            // 外層 miRNA 字母升序、內層 mRNA 保序去重、count = mRNA 數
+            assert out.text.contains('mir-1,3,"geneA,geneB,geneC"')
+            assert out.text.contains('mir-2,2,"geneA,geneB"')
+            assert out.text.contains('mir-3,1,geneA')
+
+            // '-' 缺值佔位符不應出現
+            assert !out.text.contains('geneD')
+
+            assert snapshot(process.out).match()
+        }
+    }
+}

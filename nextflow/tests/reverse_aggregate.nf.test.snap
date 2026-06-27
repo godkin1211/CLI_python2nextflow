@@ -1,0 +1,19 @@
+{
+    "reverse-aggregate a small mRNA->miRNA table": {
+        "content": [
+            {
+                "0": [
+                    "output.csv:md5,64845dffcaff6d7c2c3f81db4d1599b4"
+                ],
+                "aggregated": [
+                    "output.csv:md5,64845dffcaff6d7c2c3f81db4d1599b4"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.3"
+        },
+        "timestamp": "2026-06-27T00:07:47.241573"
+    }
+}

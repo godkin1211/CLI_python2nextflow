@@ -1,0 +1,46 @@
+nextflow_pipeline {
+
+    name "Full pipeline (reproduces reference answer)"
+    script "main.nf"
+
+    test("run on real input.csv with count_threshold=10") {
+        when {
+            params {
+                input_file_path = "${projectDir}/../static/CLI_input_file/input.csv"
+                count_threshold = 10
+                outdir          = "$outputDir"
+            }
+        }
+        then {
+            assert workflow.success
+
+            // 對齊參考答案 jobs/291fa9e9_參考答案/output/
+            def output_csv   = path("$outputDir/output/output.csv")
+            def filtered_csv = path("$outputDir/output/filtered_output.csv")
+
+            assert output_csv.readLines().size()   == 261   // header + 260 miRNA
+            assert filtered_csv.readLines().size() == 121   // header + 120 (count<=10)
+
+            // 「使用之參數」快照應被產出
+            assert path("$outputDir/params_used.yaml").exists()
+            assert path("$outputDir/params_used.yaml").text.contains("count_threshold: 10")
+        }
+    }
+
+    test("invalid count_threshold=0 is rejected by validateParameters()") {
+        when {
+            params {
+                input_file_path = "${projectDir}/../static/CLI_input_file/input.csv"
+                count_threshold = 0          // 違反 schema 的 minimum: 1
+                outdir          = "$outputDir"
+            }
+        }
+        then {
+            // validateParameters() 應在任何 process 執行前就讓 pipeline 失敗 (fail fast)
+            assert workflow.failed
+            assert workflow.exitStatus != 0
+            // 失敗原因應是參數驗證 (而非其他執行錯誤)
+            assert workflow.stdout.any { it.contains("Validation of pipeline parameters failed") }
+        }
+    }
+}

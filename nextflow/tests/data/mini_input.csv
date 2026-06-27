@@ -1,0 +1,5 @@
+mRNA,miRNAs
+geneA,"mir-1,mir-2,mir-3"
+geneB,"mir-1,mir-2"
+geneC,mir-1
+geneD,-

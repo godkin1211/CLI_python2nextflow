@@ -1,0 +1,19 @@
+{
+    "keep only rows with count <= threshold": {
+        "content": [
+            {
+                "0": [
+                    "filtered_output.csv:md5,2e449ca11629d68733fd4550894be7dc"
+                ],
+                "filtered": [
+                    "filtered_output.csv:md5,2e449ca11629d68733fd4550894be7dc"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.3"
+        },
+        "timestamp": "2026-06-27T00:07:39.712607"
+    }
+}
