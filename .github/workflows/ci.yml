@@ -35,11 +35,13 @@ jobs:
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v2
         with:
-          version: "25.10.3"
+          version: "26.04.4"
 
       - name: Install nf-test
+        # nf-test 需 >= 0.9.5 才相容 Nextflow 26.04 的 strict syntax parser
+        # (舊版生成的測試 wrapper 用 spread 語法 process(*input)，strict parser 不接受)
         run: |
-          curl -fsSL https://get.nf-test.com | bash
+          curl -fsSL https://get.nf-test.com | bash -s 0.9.5
           sudo mv nf-test /usr/local/bin/
         working-directory: .
 
