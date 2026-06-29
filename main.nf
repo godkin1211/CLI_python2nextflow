@@ -14,6 +14,7 @@ include { STAGE_INPUT       } from './modules/local/stage_input'
 include { REVERSE_AGGREGATE } from './modules/local/reverse_aggregate'
 include { FILTER_BY_COUNT   } from './modules/local/filter_by_count'
 include { RECORD_PARAMS     } from './modules/local/record_params'
+include { MAKE_REPORT       } from './modules/local/make_report'
 
 workflow {
     // ---------- 參數驗證 (輕量手動檢查) ----------
@@ -66,10 +67,18 @@ workflow {
     REVERSE_AGGREGATE( ch_input )
     FILTER_BY_COUNT( REVERSE_AGGREGATE.out.aggregated, params.count_threshold )
 
+    // HTML 報告 (供 EPI2ME Labs 內嵌呈現)，發布到 out_dir/report.html
+    MAKE_REPORT(
+        REVERSE_AGGREGATE.out.aggregated,
+        FILTER_BY_COUNT.out.filtered,
+        params.count_threshold,
+        params.job_id
+    )
+
     // (26.04 strict: handler 需用 = 賦值,並放在 workflow 內)
     workflow.onComplete = {
         log.info( workflow.success
-            ? "\n✅ Pipeline 完成! Job ID: ${params.job_id}\n   輸出目錄: ${params.out_dir}/\n   ├─ input/           (輸入快照)\n   ├─ output/          (output.csv, filtered_output.csv)\n   ├─ params_used.yaml (設定快照)\n   └─ execution/       (執行報告)\n"
+            ? "\n✅ Pipeline 完成! Job ID: ${params.job_id}\n   輸出目錄: ${params.out_dir}/\n   ├─ report.html      (EPI2ME HTML 報告)\n   ├─ input/           (輸入快照)\n   ├─ output/          (output.csv, filtered_output.csv)\n   ├─ params_used.yaml (設定快照)\n   └─ execution/       (執行報告)\n"
             : "\n❌ Pipeline 失敗 (Job ID: ${params.job_id}, exit: ${workflow.exitStatus})\n" )
     }
 }

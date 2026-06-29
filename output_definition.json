@@ -1,5 +1,13 @@
 {
   "files": {
+    "workflow-report": {
+      "filepath": "report.html",
+      "title": "workflow report",
+      "description": "HTML report summarising the reverse-aggregate results.",
+      "mime-type": "text/html",
+      "optional": false,
+      "type": "aggregated"
+    },
     "reversed-table": {
       "filepath": "output/output.csv",
       "title": "Reversed miRNA table",

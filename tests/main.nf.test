@@ -24,6 +24,12 @@ nextflow_pipeline {
             // 「使用之參數」快照應被產出
             assert path("$outputDir/params_used.yaml").exists()
             assert path("$outputDir/params_used.yaml").text.contains("count_threshold: 10")
+
+            // EPI2ME HTML 報告應被產出且自包含 (無外部連結)
+            def report = path("$outputDir/report.html")
+            assert report.exists()
+            assert report.text.contains("miRNAs (total)")
+            assert !report.text.contains("http://") && !report.text.contains("https://")
         }
     }
 
