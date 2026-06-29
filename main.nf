@@ -24,7 +24,9 @@ workflow {
         if (!params.input_file_path) {
             error "缺少必填參數 --input_file_path (輸入 CSV: mRNA, miRNAs)"
         }
-        if (!(params.count_threshold instanceof Integer) || params.count_threshold < 1) {
+        // 註: 命令列 --count_threshold 傳入為字串, -params-file 傳入為整數;
+        //     用 isInteger() 同時接受兩者。
+        if (!"${params.count_threshold}".isInteger() || "${params.count_threshold}".toInteger() < 1) {
             error "Validation of pipeline parameters failed: --count_threshold 必須是 >= 1 的整數 (目前: ${params.count_threshold})"
         }
     }
