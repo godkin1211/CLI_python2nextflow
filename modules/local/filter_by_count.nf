@@ -1,7 +1,7 @@
 // Step 2: 依 count_threshold 過濾 (保留 count <= threshold 的專一 miRNA)
 process FILTER_BY_COUNT {
     tag "filter(threshold=${count_threshold})"
-    publishDir "${params.outdir}/output", mode: 'copy'
+    publishDir "${params.out_dir}/output", mode: 'copy'
 
     input:
     path input_csv

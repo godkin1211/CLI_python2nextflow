@@ -6,15 +6,15 @@ nextflow_pipeline {
     test("run on real input.csv with count_threshold=10") {
         when {
             params {
-                input_file_path = "${projectDir}/../static/CLI_input_file/input.csv"
+                input_file_path = "${projectDir}/test_data/input.csv"
                 count_threshold = 10
-                outdir          = "$outputDir"
+                out_dir         = "$outputDir"
             }
         }
         then {
             assert workflow.success
 
-            // 對齊參考答案 jobs/291fa9e9_參考答案/output/
+            // 對齊參考答案 test_data/expected/
             def output_csv   = path("$outputDir/output/output.csv")
             def filtered_csv = path("$outputDir/output/filtered_output.csv")
 
@@ -27,20 +27,21 @@ nextflow_pipeline {
         }
     }
 
-    test("invalid count_threshold=0 is rejected by validateParameters()") {
+    test("invalid count_threshold=0 is rejected by parameter validation") {
         when {
             params {
-                input_file_path = "${projectDir}/../static/CLI_input_file/input.csv"
-                count_threshold = 0          // 違反 schema 的 minimum: 1
-                outdir          = "$outputDir"
+                input_file_path = "${projectDir}/test_data/input.csv"
+                count_threshold = 0          // 違反 count_threshold >= 1
+                out_dir         = "$outputDir"
             }
         }
         then {
-            // validateParameters() 應在任何 process 執行前就讓 pipeline 失敗 (fail fast)
+            // 手動驗證應在任何 process 執行前就讓 pipeline 失敗 (fail fast)
             assert workflow.failed
             assert workflow.exitStatus != 0
             // 失敗原因應是參數驗證 (而非其他執行錯誤)
-            assert workflow.stdout.any { it.contains("Validation of pipeline parameters failed") }
+            assert (workflow.errorReport ?: "").contains("Validation of pipeline parameters failed") ||
+                   workflow.stdout.any { it.contains("Validation of pipeline parameters failed") }
         }
     }
 }

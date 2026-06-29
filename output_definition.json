@@ -1,0 +1,36 @@
+{
+  "files": {
+    "reversed-table": {
+      "filepath": "output/output.csv",
+      "title": "Reversed miRNA table",
+      "description": "Full reversed-aggregated table: each miRNA with its target count and the list of mRNAs it targets.",
+      "mime-type": "text/csv",
+      "optional": false,
+      "type": "aggregated"
+    },
+    "filtered-table": {
+      "filepath": "output/filtered_output.csv",
+      "title": "Filtered miRNA table",
+      "description": "miRNAs with target count <= count_threshold (the more specific miRNAs).",
+      "mime-type": "text/csv",
+      "optional": false,
+      "type": "aggregated"
+    },
+    "input-snapshot": {
+      "filepath": "input/input.csv",
+      "title": "Input snapshot",
+      "description": "Copy of the input CSV used for this run.",
+      "mime-type": "text/csv",
+      "optional": false,
+      "type": "aggregated"
+    },
+    "params-used": {
+      "filepath": "params_used.yaml",
+      "title": "Parameters used",
+      "description": "Snapshot of the parameters used for this run (Job ID, thresholds, versions, time).",
+      "mime-type": "text/x-yaml",
+      "optional": false,
+      "type": "aggregated"
+    }
+  }
+}

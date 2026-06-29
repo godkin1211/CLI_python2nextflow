@@ -7,7 +7,7 @@ nextflow_process {
     test("reverse-aggregate a small mRNA->miRNA table") {
         when {
             params {
-                outdir = "$outputDir"
+                out_dir= "$outputDir"
             }
             process {
                 """

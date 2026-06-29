@@ -1,0 +1,127 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/godkin1211/CLI_python2nextflow/master/nextflow_schema.json",
+    "title": "godkin1211/CLI_python2nextflow",
+    "workflow_title": "miRNA reverse-aggregate",
+    "description": "Reverse-aggregate an mRNA->miRNA mapping table and filter by target count.",
+    "demo_url": "https://github.com/godkin1211/CLI_python2nextflow/raw/main/test_data/input.csv",
+    "url": "https://github.com/godkin1211/CLI_python2nextflow",
+    "type": "object",
+    "definitions": {
+        "input": {
+            "title": "Input Options",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Parameters for finding and handling input data for analysis.",
+            "properties": {
+                "input_file_path": {
+                    "type": "string",
+                    "format": "file-path",
+                    "title": "Input CSV",
+                    "description": "CSV file mapping each mRNA to its miRNAs.",
+                    "help_text": "A CSV file with two columns: `mRNA` and `miRNAs`. The `miRNAs` column holds one or more miRNA identifiers separated by commas (a value of `-` means no associated miRNA). The workflow reverses this mapping to produce, for each miRNA, the list of mRNAs it targets."
+                }
+            },
+            "allOf": [
+                {
+                    "required": [
+                        "input_file_path"
+                    ]
+                }
+            ]
+        },
+        "analysis": {
+            "title": "Analysis Options",
+            "type": "object",
+            "fa_icon": "fas fa-cogs",
+            "description": "Parameters that control the analysis.",
+            "properties": {
+                "count_threshold": {
+                    "type": "integer",
+                    "title": "Count threshold",
+                    "description": "Keep only miRNAs targeting at most this many mRNAs.",
+                    "help_text": "After reversing the mapping, each miRNA has a `count` of how many mRNAs it targets. Rows with `count` less than or equal to this threshold are kept (i.e. the more specific miRNAs). Must be a positive integer.",
+                    "default": 10,
+                    "minimum": 1
+                }
+            }
+        },
+        "output": {
+            "title": "Output Options",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-left",
+            "description": "Parameters for saving and naming workflow outputs.",
+            "properties": {
+                "out_dir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "title": "Output folder",
+                    "description": "Directory for output files.",
+                    "help_text": "All workflow results are written into this directory.",
+                    "default": "output"
+                }
+            }
+        },
+        "notification": {
+            "title": "Notification Options",
+            "type": "object",
+            "fa_icon": "fas fa-envelope",
+            "description": "Optional email notification on completion.",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "title": "Notification email",
+                    "description": "Email address to notify when the workflow finishes.",
+                    "help_text": "If set, an email is sent on completion or failure. Requires SMTP credentials configured via `-c conf/email.config`."
+                }
+            }
+        },
+        "misc": {
+            "title": "Miscellaneous Options",
+            "type": "object",
+            "fa_icon": "fas fa-cog",
+            "description": "Everything else.",
+            "properties": {
+                "job_id": {
+                    "type": "string",
+                    "title": "Job ID",
+                    "description": "Unique identifier for this run (auto-generated).",
+                    "help_text": "Recorded in params_used.yaml for provenance. Normally left at its auto-generated default.",
+                    "hidden": true
+                },
+                "help": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Display help text.",
+                    "hidden": true
+                },
+                "version": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Display version and exit.",
+                    "hidden": true
+                },
+                "monochrome_logs": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use monochrome (no colour) logs.",
+                    "hidden": true
+                },
+                "validate_params": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Validate parameters against the schema.",
+                    "hidden": true
+                }
+            }
+        }
+    },
+    "allOf": [
+        { "$ref": "#/definitions/input" },
+        { "$ref": "#/definitions/analysis" },
+        { "$ref": "#/definitions/output" },
+        { "$ref": "#/definitions/notification" },
+        { "$ref": "#/definitions/misc" }
+    ]
+}

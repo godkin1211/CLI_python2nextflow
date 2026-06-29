@@ -1,4 +1,0 @@
-📝 pipeline.log built: /home/user/2026_labtraining/lab_training_2026/CLI/jobs/291fa9e9/pipeline.log
-Analysis Step 1: Input file reverse COMPLETE, using  0.405 sec.
-Analysis Step 2: Filter by count_threshold COMPLETE, using  0.001 sec.
-Analysis Finish!

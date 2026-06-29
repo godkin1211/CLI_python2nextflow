@@ -2,7 +2,7 @@
 // 對應原本 Python 版的 create_config() —— 為每次執行留下參數快照,確保可重現。
 process RECORD_PARAMS {
     tag "record_params"
-    publishDir "${params.outdir}", mode: 'copy'
+    publishDir "${params.out_dir}", mode: 'copy'
 
     input:
     val summary_yaml

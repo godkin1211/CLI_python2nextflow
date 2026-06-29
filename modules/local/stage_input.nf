@@ -3,7 +3,7 @@
 // 確保每個 job 都保留當下使用的輸入,日後可完整重現。
 process STAGE_INPUT {
     tag "stage_input"
-    publishDir "${params.outdir}/input", mode: 'copy'
+    publishDir "${params.out_dir}/input", mode: 'copy'
 
     input:
     path input_csv

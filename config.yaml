@@ -1,0 +1,4 @@
+# 本機命令列執行用的範例參數檔 (EPI2ME 桌面 App 會改用 schema UI 提供參數):
+#   nextflow run main.nf -params-file config.yaml
+input_file_path: test_data/input.csv
+count_threshold: 10

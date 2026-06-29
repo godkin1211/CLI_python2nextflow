@@ -2,18 +2,13 @@
 nextflow.enable.dsl = 2
 
 /*
- * mRNA -> miRNA reverse-aggregate pipeline (Nextflow / nf-core 風格)
+ * CLI_python2nextflow (EPI2ME Labs 相容)
  *
- * 由原本的 Python CLI pipeline 改寫:
  *   Step 1 REVERSE_AGGREGATE : mRNA->miRNAs  =>  miRNA->mRNAs (含 count)
  *   Step 2 FILTER_BY_COUNT   : 保留 count <= count_threshold 的專一 miRNA
  *
- * 設定沿用原本的 YAML (config.yaml)，透過 -params-file 載入。
+ * 參數由 EPI2ME 桌面 App 或命令列提供 (見 nextflow_schema.json)。
  */
-
-// nf-schema plugin: 對照 nextflow_schema.json 驗證參數
-include { validateParameters } from 'plugin/nf-schema'
-include { paramsSummaryLog   } from 'plugin/nf-schema'
 
 include { STAGE_INPUT       } from './modules/local/stage_input'
 include { REVERSE_AGGREGATE } from './modules/local/reverse_aggregate'
@@ -21,14 +16,18 @@ include { FILTER_BY_COUNT   } from './modules/local/filter_by_count'
 include { RECORD_PARAMS     } from './modules/local/record_params'
 
 workflow {
-    // ---------- 參數驗證 (由 nf-schema 依 nextflow_schema.json 自動執行) ----------
-    // 檢查: 必填 (required)、型別 (integer/string)、format (file-path 是否存在)、
-    //       pattern (.csv)、minimum 等，失敗會立即中止並給出明確訊息。
-    // (26.04 strict: 執行陳述必須放在 workflow 內,不能在頂層)
-    validateParameters()
-
-    // nf-schema 內建的參數摘要 (只列出與預設不同 / 有意義的參數)
-    log.info paramsSummaryLog(workflow)
+    // ---------- 參數驗證 (輕量手動檢查) ----------
+    // 註: nextflow_schema.json 為 EPI2ME draft-07 格式 (供桌面 App UI 用)，
+    //     與 nf-schema 2.x plugin (要 draft 2020-12) 不相容，故命令列改用手動驗證。
+    // (26.04 strict: 執行陳述必須放在 workflow 內)
+    if (params.validate_params) {
+        if (!params.input_file_path) {
+            error "缺少必填參數 --input_file_path (輸入 CSV: mRNA, miRNAs)"
+        }
+        if (!(params.count_threshold instanceof Integer) || params.count_threshold < 1) {
+            error "Validation of pipeline parameters failed: --count_threshold 必須是 >= 1 的整數 (目前: ${params.count_threshold})"
+        }
+    }
 
     // ---------- 組出「使用之參數」摘要 ----------
     def summary_map = [
@@ -36,7 +35,7 @@ workflow {
         'Run name'         : workflow.runName,
         'input_file_path'  : params.input_file_path,
         'count_threshold'  : params.count_threshold,
-        'outdir'           : params.outdir,
+        'out_dir'          : params.out_dir,
         'Nextflow version' : workflow.nextflow.version,
         'Launch dir'       : workflow.launchDir,
         'Start time'       : new java.util.Date().format('yyyy-MM-dd HH:mm:ss'),
@@ -55,20 +54,20 @@ workflow {
 
     ch_input = Channel.fromPath(params.input_file_path, checkIfExists: true)
 
-    // 把輸入複製進 jobs/<job_id>/input/ (輸入快照)
+    // 把輸入複製進 out_dir/input/ (輸入快照)
     STAGE_INPUT( ch_input )
 
-    // 把使用之參數寫成 jobs/<job_id>/params_used.yaml (設定快照)
+    // 把使用之參數寫成 out_dir/params_used.yaml (設定快照)
     RECORD_PARAMS( Channel.value(summary_yaml) )
 
-    // Step 1 -> Step 2，輸出發布到 jobs/<job_id>/output/
+    // Step 1 -> Step 2，輸出發布到 out_dir/output/
     REVERSE_AGGREGATE( ch_input )
     FILTER_BY_COUNT( REVERSE_AGGREGATE.out.aggregated, params.count_threshold )
 
     // (26.04 strict: handler 需用 = 賦值,並放在 workflow 內)
     workflow.onComplete = {
         log.info( workflow.success
-            ? "\n✅ Pipeline 完成! Job ID: ${params.job_id}\n   輸出目錄: ${params.outdir}/\n   ├─ input/           (輸入快照)\n   ├─ output/          (output.csv, filtered_output.csv)\n   ├─ params_used.yaml (設定快照)\n   └─ pipeline_info/   (執行報告)\n"
+            ? "\n✅ Pipeline 完成! Job ID: ${params.job_id}\n   輸出目錄: ${params.out_dir}/\n   ├─ input/           (輸入快照)\n   ├─ output/          (output.csv, filtered_output.csv)\n   ├─ params_used.yaml (設定快照)\n   └─ execution/       (執行報告)\n"
             : "\n❌ Pipeline 失敗 (Job ID: ${params.job_id}, exit: ${workflow.exitStatus})\n" )
     }
 }

@@ -1,7 +1,7 @@
 // Step 1: 反轉聚合 mRNA -> miRNA  =>  miRNA -> mRNAs (含 count)
 process REVERSE_AGGREGATE {
     tag "reverse_aggregate"
-    publishDir "${params.outdir}/output", mode: 'copy'
+    publishDir "${params.out_dir}/output", mode: 'copy'
 
     input:
     path input_csv

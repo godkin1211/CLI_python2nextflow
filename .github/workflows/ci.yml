@@ -17,11 +17,6 @@ jobs:
     name: Run nf-test
     runs-on: ubuntu-latest
 
-    # pipeline 位於 repo 的 nextflow/ 子目錄
-    defaults:
-      run:
-        working-directory: nextflow
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,7 +38,6 @@ jobs:
         run: |
           curl -fsSL https://get.nf-test.com | bash -s 0.9.5
           sudo mv nf-test /usr/local/bin/
-        working-directory: .
 
       - name: Ensure bin scripts are executable
         run: chmod +x bin/*.py

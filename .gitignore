@@ -2,23 +2,13 @@
 .nextflow/
 .nextflow.log*
 work/
-nextflow/work/
-nextflow/.nextflow/
-nextflow/.nextflow.log*
 
-# ===== Job 輸出 / 結果 (每次執行自動生成) =====
-# 用 jobs/* (而非 jobs/) 才能在下面用 ! 重新包含參考答案:
-# gitignore 規則 — 父目錄被整個忽略時,無法用 ! 救回子項目。
-jobs/*
-nextflow/jobs/
+# ===== 工作流輸出 (EPI2ME out_dir, 每次執行自動生成) =====
+output/
 results/
-nextflow/results/
-# 保留「參考答案」—— 它是測試用的固定資料,不是執行產物
-!jobs/291fa9e9_參考答案/
 
 # ===== nf-test 執行暫存 (但保留 *.snap 基準與 tests/) =====
 .nf-test/
-nextflow/.nf-test/
 .nf-test.log
 
 # ===== Python 快取 =====
