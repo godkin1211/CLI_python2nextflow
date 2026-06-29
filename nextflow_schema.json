@@ -70,7 +70,6 @@
             "properties": {
                 "email": {
                     "type": "string",
-                    "format": "email",
                     "title": "Notification email",
                     "description": "Email address to notify when the workflow finishes.",
                     "help_text": "If set, an email is sent on completion or failure. Requires SMTP credentials configured via `-c conf/email.config`."
